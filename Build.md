@@ -16,9 +16,12 @@ flixel
 flixel-addons
 flixel-ui
 hscript
+
+extension-networking
+linc_luajit
+
 discord_rpc
 polymod
-linc_luajit
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
