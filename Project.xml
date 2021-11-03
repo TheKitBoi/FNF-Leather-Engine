@@ -104,6 +104,8 @@
 
 	<haxelib name="extension-networking"/>
 
+	<haxedef name="network_logging" />
+
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
 	<!--Enable the Flixel core recording system-->
