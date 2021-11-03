@@ -672,6 +672,21 @@ class StageGroup extends FlxGroup
         return [0,0];
     }
 
+    public function getCoolCharacterPos(character:Int, charSprite:Character):Dynamic
+    {
+        switch(character)
+        {
+            case 0: // bf
+                return [(player_1_Point.x - (charSprite.width / 2)) + charSprite.positioningOffset[0], (player_1_Point.y - charSprite.height) + charSprite.positioningOffset[1]];
+            case 1: // dad
+                return [(player_2_Point.x - (charSprite.width / 2)) + charSprite.positioningOffset[0], (player_2_Point.y - charSprite.height) + charSprite.positioningOffset[1]];
+            case 2: // gf
+                return [(gf_Point.x - (charSprite.width / 2)) + charSprite.positioningOffset[0], (gf_Point.y - charSprite.height) + charSprite.positioningOffset[1]];
+        }
+
+        return [0,0];
+    }
+
     override public function new(?stageName:String) {
         super();
 
@@ -690,8 +705,11 @@ class StageGroup extends FlxGroup
         {
             case 'philly':
             {
-                if (!trainMoving)
-					trainCooldown += 1;
+                if(FlxG.state == PlayState.instance)
+                {
+                    if (!trainMoving)
+                        trainCooldown += 1;
+                }
 
 				if (PlayState.currentBeat % 4 == 0)
 				{
@@ -706,11 +724,14 @@ class StageGroup extends FlxGroup
 					// phillyCityLights.members[curLight].alpha = 1;
 				}
 
-				if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-				{
-					trainCooldown = FlxG.random.int(-4, 0);
-					trainStart();
-				}
+                if(FlxG.state == PlayState.instance)
+                {
+                    if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+                    {
+                        trainCooldown = FlxG.random.int(-4, 0);
+                        trainStart();
+                    }
+                }
             }
             case 'school':
             {
@@ -734,9 +755,12 @@ class StageGroup extends FlxGroup
             }
             case 'spooky':
             {
-                if (FlxG.random.bool(10) && PlayState.currentBeat > lightningStrikeBeat + lightningOffset)
+                if(FlxG.state == PlayState.instance)
                 {
-                    lightningStrikeShit();
+                    if (FlxG.random.bool(10) && PlayState.currentBeat > lightningStrikeBeat + lightningOffset)
+                    {
+                        lightningStrikeShit();
+                    }
                 }
             }
             case 'wasteland':

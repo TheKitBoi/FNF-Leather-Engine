@@ -1,5 +1,6 @@
 package states;
 
+import multiplayer.MultiplayerState;
 import flixel.system.FlxVersion;
 import substates.OutdatedSubState;
 import openfl.Lib;
@@ -69,6 +70,7 @@ class TitleState extends MusicBeatState
 		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+
 		super.create();
 
 		new FlxTimer().start(1, function(tmr:FlxTimer)
@@ -114,9 +116,9 @@ class TitleState extends MusicBeatState
 			diamond.destroyOnNoUse = false;
 
 			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+				new FlxRect(-200, -200, FlxG.width * 2, FlxG.height * 2));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 2, FlxG.height * 2));
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
@@ -124,6 +126,10 @@ class TitleState extends MusicBeatState
 			// HAD TO MODIFY SOME BACKEND SHIT
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
+
+			#if MULTIPLAYER_TEST
+			FlxG.switchState(new MultiplayerState());
+			#end
 
 			if (FlxG.save.data.oldTitle)
 			{
