@@ -96,6 +96,11 @@ class MultiplayerState extends MusicBeatState
 
         add(ipBox);
 
+        var portBox = new FlxUIInputText(ipBox.x + ipBox.width + 2, ipBox.y, 70, "9999", 8);
+        portBox.cameras = [camHUD];
+
+        add(portBox);
+
         var connectClient = new FlxButton(10, 80,"Connect Client", function()
         {
             if(nameBox.text != "")
@@ -104,7 +109,7 @@ class MultiplayerState extends MusicBeatState
                 if(Multiplayer.getInstance()._session != null)
                     Multiplayer.getInstance().finish();
 
-                Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: 9999 });
+                Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: Std.parseInt(portBox.text) });
             }
         });
 
