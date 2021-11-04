@@ -91,10 +91,15 @@ class MultiplayerState extends MusicBeatState
 
         add(nameBox);
 
+        var ipBox = new FlxUIInputText(10, 270, 70, "127.0.0.1", 8);
+        ipBox.cameras = [camHUD];
+
+        add(ipBox);
+
         var connectClient = new FlxButton(10, 80,"Connect Client", function()
         {
             if(nameBox.text != "")
-                Multiplayer.getInstance().start(CLIENT, { ip: '127.0.0.1', port: 9999 });
+                Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: 9999 });
         });
 
         connectClient.cameras = [camHUD];
