@@ -348,9 +348,10 @@ class StageGroup extends FlxGroup
                 bgGirls = new BackgroundGirls(-100, 190);
                 bgGirls.scrollFactor.set(0.9, 0.9);
 
-                if (PlayState.SONG.song.toLowerCase() == 'roses')
+                if(FlxG.state == PlayState.instance)
                 {
-                    bgGirls.getScared();
+                    if(PlayState.SONG.song.toLowerCase() == 'roses')
+                        bgGirls.getScared();
                 }
 
                 bgGirls.setGraphicSize(Std.int(bgGirls.width * PlayState.daPixelZoom));

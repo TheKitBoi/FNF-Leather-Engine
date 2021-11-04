@@ -1,5 +1,11 @@
 package multiplayer;
 
+import networking.utils.NetworkMode;
+import flixel.ui.FlxButton;
+import flixel.addons.ui.FlxUIInputText;
+import flixel.FlxCamera;
+import utilities.CoolUtil;
+import ui.FlxUIDropDownMenuCustom;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.FlxObject;
@@ -16,27 +22,32 @@ class MultiplayerState extends MusicBeatState
 {
     var stage:StageGroup;
 
-    var players:Array<Character> = [];
-    var names:Array<FlxText> = [];
-
     var camFollow:FlxObject;
 
     var selectedPlayer:Int = 0;
 
+    var camGame:FlxCamera;
+    var camHUD:FlxCamera;
+
+    var testBox:FlxUIInputText;
+
     override public function create()
     {
+        camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+
+		FlxG.cameras.reset();
+		FlxG.cameras.add(camGame, true);
+		FlxG.cameras.add(camHUD, false);
+
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+
+		FlxG.camera = camGame;
+        
         FlxG.mouse.visible = true;
 
-        if(!FlxG.save.data.chrsAndBGs)
-			stage = new StageGroup("");
-		else
-			stage = new StageGroup("stage");
-
-        add(stage);
-
-        loadCharacter(0, "bf", "Player1");
-        loadCharacter(1, "spooky", "Player2");
-        loadCharacter(2, "dad", "Player3");
+        loadStage("stage");
 
         var prevVal:Bool = FlxG.save.data.nightMusic;
 
@@ -51,10 +62,39 @@ class MultiplayerState extends MusicBeatState
 
         FlxG.sound.music.fadeIn(4, 0, 0.7);
 
-        camFollow = new FlxObject(players[selectedPlayer].getGraphicMidpoint().x, players[selectedPlayer].getGraphicMidpoint().y, 1, 1);
-		add(camFollow);
+        var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
-        FlxG.camera.zoom = stage.camZoom;
+		var stageDropDown = new FlxUIDropDownMenuCustom(10, 50, FlxUIDropDownMenuCustom.makeStrIdLabelArray(stages, true), function(stage:String)
+		{
+			loadStage(stages[Std.parseInt(stage)]);
+		});
+
+		stageDropDown.selectedLabel = "stage";
+        stageDropDown.cameras = [camHUD];
+
+        add(stageDropDown);
+
+        testBox = new FlxUIInputText(10, 180, 70, "a", 8);
+        testBox.cameras = [camHUD];
+
+        add(testBox);
+
+        var connectClient = new FlxButton(10, 80,"Connect Client", function()
+        {
+            Multiplayer.getInstance().start(CLIENT, { ip: '127.0.0.1', port: 9999 });
+        });
+
+        connectClient.cameras = [camHUD];
+
+        var startServer = new FlxButton(connectClient.x + connectClient.width + 2, connectClient.y,"Start Server", function()
+        {
+            Multiplayer.getInstance().start(SERVER, { ip: '0.0.0.0', port: 9999, max_connections: 1 });
+        });
+
+        startServer.cameras = [camHUD];
+
+        add(connectClient);
+        add(startServer);
 
         super.create();
     }
@@ -63,69 +103,35 @@ class MultiplayerState extends MusicBeatState
     {
         if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-
-        if(controls.LEFT_P || controls.RIGHT_P)
-        {
-            if(controls.LEFT_P)
-                selectedPlayer -= 1;
-
-            if(controls.RIGHT_P)
-                selectedPlayer += 1;
-
-            if(selectedPlayer < 0)
-                selectedPlayer = players.length - 1;
-
-            if(selectedPlayer > players.length - 1)
-                selectedPlayer = 0;
-
-            camFollow.setPosition(players[selectedPlayer].getGraphicMidpoint().x, players[selectedPlayer].getGraphicMidpoint().y);
-        }
-
-        FlxG.camera.follow(camFollow, FlxCameraFollowStyle.LOCKON, 0.12 * (60 / Main.display.currentFPS));
         
         super.update(elapsed);
     }
 
     override public function beatHit()
     {
-        for(character in players) {
-            character.dance();
-        }
-
-        stage.beatHit();
+        if(stage != null)
+            stage.beatHit();
 
         super.beatHit();
     }
 
-    function loadCharacter(player:Int, characterName:String, playerName:String)
+    function loadStage(?stageName:String = "stage")
     {
-        players[player] = new Character(0, 0, characterName);
-
-        var playerSprite = players[player];
-
-        var coolBfPos = stage.getCoolCharacterPos(1, playerSprite);
-
-        playerSprite.setPosition(coolBfPos[0], coolBfPos[1]);
-
-        if(player > 0)
+        if(stage != null)
         {
-            for(character in players) {
-                if(character != playerSprite)
-                    playerSprite.x += character.width;
-            }
+            remove(stage);
 
-            playerSprite.x += 12;
+            stage.kill();
+            stage.destroy();
         }
 
-        add(playerSprite);
+        if(!FlxG.save.data.chrsAndBGs)
+			stage = new StageGroup("");
+		else
+			stage = new StageGroup(stageName);
 
-        var playerMidpoint = playerSprite.getGraphicMidpoint();
+        add(stage);
 
-        names[player] = new FlxText(playerMidpoint.x, playerMidpoint.y - (playerSprite.height / 2), 0, playerName, 32);
-
-        names[player].setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
-        names[player].setPosition(playerMidpoint.x - (names[0].width / 2), playerMidpoint.y - (playerSprite.height / 2) - names[0].height - 6);
-
-        add(names[player]);
+        FlxG.camera.zoom = stage.camZoom;
     }
 }

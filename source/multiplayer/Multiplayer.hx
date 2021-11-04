@@ -10,6 +10,23 @@ class Multiplayer
     /** Current networking session. **/
     private var _session: Session;
 
+    /** Singleton instance of this class. **/
+    private static var s_instance:Multiplayer;
+
+    /** Singleton getter. **/
+    public static function getInstance():Multiplayer
+    {
+        if (s_instance == null)
+            s_instance = new Multiplayer();
+
+        return s_instance;
+    }
+
+    /**
+        * Empty constructor.
+    */
+    private function new() {}
+
     /**
     * Start a new game either as a server or as a client.
     * This method will initialize the networking session, and add the required event listeners.
