@@ -128,6 +128,26 @@ class MultiplayerState extends MusicBeatState
             var _session = Multiplayer.getInstance()._session;
             
             _session.send({verb: 'chatMessage', message: testBox.text, messanger: nameBox.text});
+
+            @:privateAccess
+            if(MultiplayerState.instance != null)
+            {
+                MultiplayerState.instance.coolChat.text += nameBox.text + ": " + testBox.text + "\n";
+
+                var text = MultiplayerState.instance.coolChat.text;
+
+                if(text.split("\n").length > 10)
+                {
+                    var lines = text.split("\n");
+
+                    MultiplayerState.instance.coolChat.text = "";
+
+                    for(line in 0...lines.length) {
+                        if(line > 0 && lines[line] != "\n" && lines[line] != "")
+                            MultiplayerState.instance.coolChat.text += lines[line] + "\n";
+                    }
+                }
+            }
         });
 
         chat.cameras = [camHUD];
