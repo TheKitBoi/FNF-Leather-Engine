@@ -30,9 +30,16 @@ class MultiplayerState extends MusicBeatState
     var camHUD:FlxCamera;
 
     var testBox:FlxUIInputText;
+    var nameBox:FlxUIInputText;
+
+    var coolChat:FlxText;
+
+    public static var instance:MultiplayerState;
 
     override public function create()
     {
+        instance = this;
+
         camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -74,14 +81,20 @@ class MultiplayerState extends MusicBeatState
 
         add(stageDropDown);
 
-        testBox = new FlxUIInputText(10, 180, 70, "a", 8);
+        testBox = new FlxUIInputText(10, 180, 70, "", 8);
         testBox.cameras = [camHUD];
 
         add(testBox);
 
+        nameBox = new FlxUIInputText(10, 220, 70, "", 8);
+        nameBox.cameras = [camHUD];
+
+        add(nameBox);
+
         var connectClient = new FlxButton(10, 80,"Connect Client", function()
         {
-            Multiplayer.getInstance().start(CLIENT, { ip: '127.0.0.1', port: 9999 });
+            if(nameBox.text != "")
+                Multiplayer.getInstance().start(CLIENT, { ip: '127.0.0.1', port: 9999 });
         });
 
         connectClient.cameras = [camHUD];
@@ -93,6 +106,21 @@ class MultiplayerState extends MusicBeatState
 
         startServer.cameras = [camHUD];
 
+        var chat = new FlxButton(testBox.x + testBox.width + 2, testBox.y, "Chat", function()
+        {
+            @:privateAccess
+            var _session = Multiplayer.getInstance()._session;
+            
+            _session.send({verb: 'chatMessage', message: testBox.text, messanger: nameBox.text});
+        });
+
+        chat.cameras = [camHUD];
+
+        coolChat = new FlxText(chat.x + chat.width, chat.y, 0, "", 16);
+        coolChat.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+        add(coolChat);
+
+        add(chat);
         add(connectClient);
         add(startServer);
 
@@ -132,6 +160,6 @@ class MultiplayerState extends MusicBeatState
 
         add(stage);
 
-        FlxG.camera.zoom = stage.camZoom;
+        //FlxG.camera.zoom = stage.camZoom;
     }
 }

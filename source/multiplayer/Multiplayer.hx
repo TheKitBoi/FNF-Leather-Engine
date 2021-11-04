@@ -156,79 +156,28 @@ class Multiplayer
     * @param e Networking event.
     */
     private function onMessageRecieved(e: NetworkEvent) {
-        switch(_session.mode) {
-            case SERVER:
-            // If we're a server...
-            switch(e.verb) {
-                // Handle the click events. The message data has this structure: { verb: 'click', row: 1, col: 0 }
-                case "click":
-                // Ignore the clicks if it's not his turn.
-                /*
-                if (_current_turn != CLIENT_PIECE_TYPE) return;
+        switch(e.verb)
+        {
+            case "chatMessage":
+                @:privateAccess
+                if(MultiplayerState.instance != null)
+                {
+                    MultiplayerState.instance.coolChat.text += e.data.messanger + ": " + e.data.message + "\n";
 
-                // If the client can place the piece in that position...
-                if (Board.getInstance().canPlacePieceOn(e.data.row, e.data.col)) {
-                    // Add that piece.
-                    Board.getInstance().addPiece(CLIENT_PIECE_TYPE, e.data.row, e.data.col);
-                    // Say the client to put that piece into the board.
-                    _session.send({ verb: "new_piece", type: CLIENT_PIECE_TYPE, row: e.data.row, col: e.data.col });
+                    var text = MultiplayerState.instance.coolChat.text;
 
-                    // If the client wins...
-                    if (Board.getInstance().winningMove(CLIENT_PIECE_TYPE, e.data.row, e.data.col)) {
-                    // That means we lose :(
-                    gameOverMessage(GAMEOVER_LOSER);
-                    _session.send({ verb: "game_over", winner: CLIENT_PIECE_TYPE });
+                    if(text.split("\n").length > 10)
+                    {
+                        var lines = text.split("\n");
+
+                        MultiplayerState.instance.coolChat.text = "";
+
+                        for(line in 0...lines.length) {
+                            if(line > 0 && lines[line] != "\n" && lines[line] != "")
+                                MultiplayerState.instance.coolChat.text += lines[line] + "\n";
+                        }
                     }
-                    // If draw...
-                    else if (Board.getInstance().draw()) {
-                    gameOverMessage(GAMEOVER_DRAW);
-                    // Tell the client! { winner: '' } means it's a draw.
-                    _session.send({ verb: "game_over", winner: '' });
-                    }
-                    // Otherwise, the match is still on!
-                    else {
-                    // It's the server's turn.
-                    _session.send({ verb: "my_turn" });
-                    toggleTurn();
-                    yourTurn();
-                    }
-                }*/
-            }
-
-            // If we're a client...
-            case CLIENT:
-            switch(e.verb) {
-                // Add new pieces to the board. { verb: 'new_piece', type: 'X', row: 0, col: 2 }
-                case "new_piece":
-                    //Board.getInstance().addPiece(e.data.type, e.data.row, e.data.col);
-
-                // Game over! { verb: 'game_over', winner: 'O' }
-                case "game_over":
-                    /*
-                switch(e.data.winner) {
-                    case CLIENT_PIECE_TYPE:
-                        // We've won! :)
-                        gameOverMessage(GAMEOVER_WINNER);
-
-                    case SERVER_PIECE_TYPE:
-                        // The server has won :(
-                        gameOverMessage(GAMEOVER_LOSER);
-
-                    default:
-                        // Draw :|
-                        gameOverMessage(GAMEOVER_DRAW);
-                }*/
-
-                // Clien'ts turn. Show a "Your turn" message. { verb: 'your_turn' }
-                case "your_turn":
-                //_current_turn = CLIENT_PIECE_TYPE;
-                //StatusMessage.getInstance().setText('Your turn');
-
-                // Server's turn. Hide "Your turn" message. { verb: 'my_turn' }
-                case "my_turn":
-                //_current_turn = SERVER_PIECE_TYPE;
-                //StatusMessage.getInstance().setText();
-            }
+                }
         }
     }
 }
