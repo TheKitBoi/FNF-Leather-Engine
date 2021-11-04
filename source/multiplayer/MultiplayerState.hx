@@ -106,7 +106,7 @@ class MultiplayerState extends MusicBeatState
 
         var startServer = new FlxButton(connectClient.x + connectClient.width + 2, connectClient.y,"Start Server", function()
         {
-            Multiplayer.getInstance().start(SERVER, { ip: '0.0.0.0', port: 9999, max_connections: 1 });
+            Multiplayer.getInstance().start(SERVER, { ip: '0.0.0.0', port: 9999, max_connections: 100 });
         });
 
         startServer.cameras = [camHUD];
