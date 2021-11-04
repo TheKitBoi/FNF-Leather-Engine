@@ -148,6 +148,8 @@ class MultiplayerState extends MusicBeatState
                     }
                 }
             }
+
+            testBox.text = "";
         });
 
         chat.cameras = [camHUD];
