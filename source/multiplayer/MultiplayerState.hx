@@ -1,5 +1,6 @@
 package multiplayer;
 
+import states.MainMenuState;
 import networking.utils.NetworkMode;
 import flixel.ui.FlxButton;
 import flixel.addons.ui.FlxUIInputText;
@@ -167,8 +168,11 @@ class MultiplayerState extends MusicBeatState
 
     override function update(elapsed:Float)
     {
-        if (FlxG.sound.music != null)
+        if(FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
+
+        if(controls.BACK)
+            FlxG.switchState(new MainMenuState());
         
         super.update(elapsed);
     }

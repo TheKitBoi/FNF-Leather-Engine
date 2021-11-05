@@ -1,5 +1,6 @@
 package states;
 
+import multiplayer.MultiplayerState;
 import utilities.MusicUtilities;
 import lime.utils.Assets;
 #if desktop
@@ -38,7 +39,7 @@ class MainMenuState extends MusicBeatState
 			optionShit.push('mods');
 		
 		#if !web
-		//optionShit.push('multiplayer');
+		optionShit.push('multiplayer');
 		#end
 		
 		Application.current.window.title = Application.current.meta.get('name');
@@ -188,6 +189,9 @@ class MainMenuState extends MusicBeatState
 
 								case 'mods':
 									FlxG.switchState(new ModsMenu());
+
+								case 'multiplayer':
+									FlxG.switchState(new MultiplayerState());
 							}
 						});
 					}
