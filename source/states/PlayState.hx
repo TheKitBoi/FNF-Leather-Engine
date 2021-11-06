@@ -1803,7 +1803,7 @@ class PlayState extends MusicBeatState
 					}
 					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 					{
-						var coolStrum = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))];
+						var coolStrum = enemyStrums.members[Math.floor(Math.abs(daNote.noteData))];
 						var arrayVal = Std.string([daNote.noteData, daNote.arrow_Type, daNote.isSustainNote]);
 
 						daNote.visible = coolStrum.visible;
@@ -2021,7 +2021,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				health += 0.005;
 			case 'shit':
-				health -= 0.1; // yes its more than a miss so that spamming with ghost tapping on is bad
+				health -= 0.06; // yes its more than a miss so that spamming with ghost tapping on is bad
 				misses += 1;
 				combo = 0;
 		}
