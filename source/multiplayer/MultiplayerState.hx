@@ -1,5 +1,9 @@
 package multiplayer;
 
+import states.LoadingState;
+import game.Song;
+import game.Highscore;
+import states.PlayState;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUITabMenu;
 import networking.utils.NetworkEvent;
@@ -156,6 +160,22 @@ class MultiplayerState extends MusicBeatState
                             coolChat.text += lines[line] + "\n";
                     }
                 }
+            case "startGame":
+                var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
+	
+				trace(poop);
+                
+                PlayState.SONG = Song.loadFromJson(poop,songs[curSelected].songName.toLowerCase());
+                PlayState.isStoryMode = false;
+                PlayState.storyDifficulty = curDifficulty;
+                PlayState.songMultiplier = curSpeed;
+				PlayState.storyDifficultyStr = curDiffString.toUpperCase();
+                PlayState.isMultiplayer = true;
+
+				PlayState.storyWeek = songs[curSelected].week;
+				trace('CUR WEEK' + PlayState.storyWeek);
+
+				LoadingState.loadAndSwitchState(new PlayState());
         }
     }
 
