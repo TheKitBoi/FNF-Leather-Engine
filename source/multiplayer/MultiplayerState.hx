@@ -161,8 +161,12 @@ class MultiplayerState extends MusicBeatState
                     }
                 }
             case "startGame":
+<<<<<<< HEAD
+            /*    var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
+=======
                 /*
                 var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
+>>>>>>> b03ae410652d69a91405d5e1139c7ebb854c63a3
 	
 				trace(poop);
                 
@@ -176,7 +180,11 @@ class MultiplayerState extends MusicBeatState
 				PlayState.storyWeek = songs[curSelected].week;
 				trace('CUR WEEK' + PlayState.storyWeek);
 
+<<<<<<< HEAD
+				LoadingState.loadAndSwitchState(new PlayState()); */
+=======
 				LoadingState.loadAndSwitchState(new PlayState());*/
+>>>>>>> b03ae410652d69a91405d5e1139c7ebb854c63a3
         }
     }
 
