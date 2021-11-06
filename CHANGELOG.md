@@ -1,9 +1,14 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.4.0] - ?/?/????
+## [0.3.6] - 11/6/2021
+### Fixed
+- Freeplay crashing when changing speed after closing song in freeplay or beating song and going back to freeplay (aka there was no bg music).
+
+## [0.3.5] - 11/6/2021
 ### Added
 - Hitsounds in the charter
+- Rythm Input Mode (basically have to hit notes in order).
 ### Fixed
 - Crash when ghost tapping is off (and you miss) and a modchart is active.
 - Custom Difficulty Inst / Vocals not loading correctly when loading charter (because difficulty wasn't set before the audio was loaded).
