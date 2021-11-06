@@ -1,5 +1,8 @@
 package multiplayer;
 
+import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
+import networking.utils.NetworkEvent;
 import states.MainMenuState;
 import networking.utils.NetworkMode;
 import flixel.ui.FlxButton;
@@ -30,12 +33,16 @@ class MultiplayerState extends MusicBeatState
     var camGame:FlxCamera;
     var camHUD:FlxCamera;
 
-    var testBox:FlxUIInputText;
+    var chatBox:FlxUIInputText;
     var nameBox:FlxUIInputText;
 
     var coolChat:FlxText;
+    var UI_box:FlxUITabMenu;
 
     public static var instance:MultiplayerState;
+
+    var ipBox:FlxUIInputText;
+    var portBox:FlxUIInputText;
 
     override public function create()
     {
@@ -70,98 +77,24 @@ class MultiplayerState extends MusicBeatState
 
         FlxG.sound.music.fadeIn(4, 0, 0.7);
 
-        var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+        var tabs = [
+			{name: "Room", label: 'Room'},
+			{name: "Client", label: 'Client'},
+			{name: "Server", label: 'Server'}
+		];
 
-		var stageDropDown = new FlxUIDropDownMenuCustom(10, 50, FlxUIDropDownMenuCustom.makeStrIdLabelArray(stages, true), function(stage:String)
-		{
-			loadStage(stages[Std.parseInt(stage)]);
-		});
+        UI_box = new FlxUITabMenu(null, tabs, true);
 
-		stageDropDown.selectedLabel = "stage";
-        stageDropDown.cameras = [camHUD];
+		UI_box.resize(300, 400);
+		UI_box.x = 5;
+		UI_box.y = 40;
+        UI_box.cameras = [camHUD];
 
-        add(stageDropDown);
+        UI_box.scrollFactor.set();
 
-        testBox = new FlxUIInputText(10, 180, 70, "", 8);
-        testBox.cameras = [camHUD];
+		add(UI_box);
 
-        add(testBox);
-
-        nameBox = new FlxUIInputText(10, 220, 70, "", 8);
-        nameBox.cameras = [camHUD];
-
-        add(nameBox);
-
-        var ipBox = new FlxUIInputText(10, 270, 70, "127.0.0.1", 8);
-        ipBox.cameras = [camHUD];
-
-        add(ipBox);
-
-        var portBox = new FlxUIInputText(ipBox.x + ipBox.width + 2, ipBox.y, 70, "9999", 8);
-        portBox.cameras = [camHUD];
-
-        add(portBox);
-
-        var connectClient = new FlxButton(10, 80,"Connect Client", function()
-        {
-            if(nameBox.text != "")
-            {
-                @:privateAccess
-                if(Multiplayer.getInstance()._session != null)
-                    Multiplayer.getInstance().finish();
-
-                Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: Std.parseInt(portBox.text) });
-            }
-        });
-
-        connectClient.cameras = [camHUD];
-
-        var startServer = new FlxButton(connectClient.x + connectClient.width + 2, connectClient.y,"Start Server", function()
-        {
-            Multiplayer.getInstance().start(SERVER, { ip: '0.0.0.0', port: 9999, max_connections: 100 });
-        });
-
-        startServer.cameras = [camHUD];
-
-        var chat = new FlxButton(testBox.x + testBox.width + 2, testBox.y, "Chat", function()
-        {
-            @:privateAccess
-            var _session = Multiplayer.getInstance()._session;
-            
-            _session.send({verb: 'chatMessage', message: testBox.text, messanger: nameBox.text});
-
-            @:privateAccess
-            if(MultiplayerState.instance != null)
-            {
-                MultiplayerState.instance.coolChat.text += nameBox.text + ": " + testBox.text + "\n";
-
-                var text = MultiplayerState.instance.coolChat.text;
-
-                if(text.split("\n").length > 10)
-                {
-                    var lines = text.split("\n");
-
-                    MultiplayerState.instance.coolChat.text = "";
-
-                    for(line in 0...lines.length) {
-                        if(line > 0 && lines[line] != "\n" && lines[line] != "")
-                            MultiplayerState.instance.coolChat.text += lines[line] + "\n";
-                    }
-                }
-            }
-
-            testBox.text = "";
-        });
-
-        chat.cameras = [camHUD];
-
-        coolChat = new FlxText(chat.x + chat.width, chat.y, 0, "", 16);
-        coolChat.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
-        add(coolChat);
-
-        add(chat);
-        add(connectClient);
-        add(startServer);
+        coolUI();
 
         super.create();
     }
@@ -171,7 +104,7 @@ class MultiplayerState extends MusicBeatState
         if(FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
-        if(controls.BACK)
+        if(FlxG.keys.justPressed.ESCAPE)
             FlxG.switchState(new MainMenuState());
         
         super.update(elapsed);
@@ -201,7 +134,150 @@ class MultiplayerState extends MusicBeatState
 			stage = new StageGroup(stageName);
 
         add(stage);
+    }
 
-        //FlxG.camera.zoom = stage.camZoom;
+    public function onMessageRecieved(e: NetworkEvent)
+    {
+        switch(e.verb)
+        {
+            case "chatMessage":
+                coolChat.text += e.data.messanger + ": " + e.data.message + "\n";
+
+                var text = coolChat.text;
+
+                if(text.split("\n").length >= 25)
+                {
+                    var lines = text.split("\n");
+
+                    coolChat.text = "";
+
+                    for(line in 0...lines.length) {
+                        if(line > 0 && lines[line] != "\n" && lines[line] != "")
+                            coolChat.text += lines[line] + "\n";
+                    }
+                }
+        }
+    }
+
+    function coolUI()
+    {
+        var tab_room = new FlxUI(null, UI_box);
+		tab_room.name = "Room";
+
+        var tab_client = new FlxUI(null, UI_box);
+		tab_client.name = "Client";
+
+        var tab_server = new FlxUI(null, UI_box);
+		tab_server.name = "Server";
+
+        UI_box.addGroup(tab_room);
+        UI_box.addGroup(tab_client);
+        UI_box.addGroup(tab_server);
+
+        /* ROOM STUFF */
+        var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+
+		var stageDropDown = new FlxUIDropDownMenuCustom(10, 10, FlxUIDropDownMenuCustom.makeStrIdLabelArray(stages, true), function(stage:String)
+		{
+			loadStage(stages[Std.parseInt(stage)]);
+		});
+
+		stageDropDown.selectedLabel = "stage";
+        stageDropDown.cameras = [camHUD];
+
+        chatBox = new FlxUIInputText(stageDropDown.x + stageDropDown.width, 10, 70, "", 8);
+        chatBox.cameras = [camHUD];
+
+        var chat = new FlxButton(chatBox.x + chatBox.width + 2, chatBox.y, "Chat", function()
+        {
+            @:privateAccess
+            var _session = Multiplayer.getInstance()._session;
+            
+            _session.send({verb: 'chatMessage', message: chatBox.text, messanger: nameBox.text});
+
+            @:privateAccess
+            if(MultiplayerState.instance != null)
+            {
+                MultiplayerState.instance.coolChat.text += nameBox.text + ": " + chatBox.text + "\n";
+
+                var text = MultiplayerState.instance.coolChat.text;
+
+                if(text.split("\n").length >= 25)
+                {
+                    var lines = text.split("\n");
+
+                    MultiplayerState.instance.coolChat.text = "";
+
+                    for(line in 0...lines.length) {
+                        if(line > 0 && lines[line] != "\n" && lines[line] != "")
+                            MultiplayerState.instance.coolChat.text += lines[line] + "\n";
+                    }
+                }
+            }
+
+            chatBox.text = "";
+        });
+
+        chat.visible = false;
+        chat.cameras = [camHUD];
+
+        tab_room.add(chatBox);
+        tab_room.add(chat);
+        tab_room.add(stageDropDown);
+
+        /* CLIENT STUFF */
+        var connectClient = new FlxButton(10, 10,"Connect Client", function()
+        {
+            if(nameBox.text != "")
+            {
+                @:privateAccess
+                if(Multiplayer.getInstance()._session != null)
+                    Multiplayer.getInstance().finish();
+
+                Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: Std.parseInt(portBox.text) });
+
+                chat.visible = true;
+            }
+        });
+
+        connectClient.cameras = [camHUD];
+
+        ipBox = new FlxUIInputText(connectClient.x + connectClient.width + 2, connectClient.y, 70, "127.0.0.1", 8);
+        ipBox.cameras = [camHUD];
+
+        portBox = new FlxUIInputText(ipBox.x, ipBox.y + ipBox.height + 2, 70, "9999", 8);
+        portBox.cameras = [camHUD];
+
+        nameBox = new FlxUIInputText(10, portBox.y + portBox.height + 2, 70, "", 8);
+        nameBox.cameras = [camHUD];
+
+        var ipLabel = new FlxText(ipBox.x + ipBox.width, ipBox.y, 0, "IP", 9);
+        var portLabel = new FlxText(portBox.x + portBox.width, portBox.y, 0, "Port", 9);
+        var nameLabel = new FlxText(nameBox.x + nameBox.width, nameBox.y, 0, "Username", 9);
+
+        tab_client.add(ipBox);
+        tab_client.add(portBox);
+        tab_client.add(nameBox);
+
+        tab_client.add(ipLabel);
+        tab_client.add(portLabel);
+        tab_client.add(nameLabel);
+        
+        tab_client.add(connectClient);
+
+        /* SERVER STUFF */
+        var startServer = new FlxButton(10, 10,"Start Server", function()
+        {
+            Multiplayer.getInstance().start(SERVER, { ip: '0.0.0.0', port: 9999, max_connections: 100 });
+        });
+
+        startServer.cameras = [camHUD];
+
+        tab_server.add(startServer);
+
+        /* OUTSIDE IDK */
+        coolChat = new FlxText(UI_box.x + UI_box.width, UI_box.y, 0, "", 16);
+        coolChat.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+        add(coolChat);
     }
 }

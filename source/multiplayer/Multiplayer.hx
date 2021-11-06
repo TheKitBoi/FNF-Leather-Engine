@@ -1,5 +1,6 @@
 package multiplayer;
 
+import flixel.FlxG;
 import networking.Network;
 import networking.sessions.Session;
 import networking.utils.NetworkEvent;
@@ -156,28 +157,7 @@ class Multiplayer
     * @param e Networking event.
     */
     private function onMessageRecieved(e: NetworkEvent) {
-        switch(e.verb)
-        {
-            case "chatMessage":
-                @:privateAccess
-                if(MultiplayerState.instance != null)
-                {
-                    MultiplayerState.instance.coolChat.text += e.data.messanger + ": " + e.data.message + "\n";
-
-                    var text = MultiplayerState.instance.coolChat.text;
-
-                    if(text.split("\n").length > 10)
-                    {
-                        var lines = text.split("\n");
-
-                        MultiplayerState.instance.coolChat.text = "";
-
-                        for(line in 0...lines.length) {
-                            if(line > 0 && lines[line] != "\n" && lines[line] != "")
-                                MultiplayerState.instance.coolChat.text += lines[line] + "\n";
-                        }
-                    }
-                }
-        }
+        if(FlxG.state == MultiplayerState.instance)
+            MultiplayerState.instance.onMessageRecieved(e);
     }
 }
