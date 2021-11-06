@@ -1,5 +1,6 @@
 package states;
 
+import networking.utils.NetworkEvent;
 import game.StrumNote;
 import game.Cutscene;
 #if BIT_64
@@ -2672,4 +2673,9 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+
+	public function onMessageRecieved(e: NetworkEvent)
+	{
+
+	}
 }
