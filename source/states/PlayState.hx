@@ -74,6 +74,7 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 	public static var storyDifficultyStr:String = "NORMAL";
+	public static var isMultiplayer:Bool = false;
 
 	var halloweenLevel:Bool = false;
 
@@ -603,6 +604,7 @@ class PlayState extends MusicBeatState
 		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
 		fromPauseMenu = false;
+		PlayState.isMultiplayer = false;
 
 		super.create();
 	}
