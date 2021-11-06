@@ -1,4 +1,4 @@
-package ;
+package;
  
 import flixel.system.FlxBasePreloader;
 import openfl.display.Sprite;
@@ -39,13 +39,17 @@ class Preloader extends FlxBasePreloader
      
     override function update(Percent:Float):Void 
     {
+        logo.alpha = 0.3 + Percent;
+
         if(Percent < 69)
         {
             logo.scaleX += Percent / 1920;
             logo.scaleY += Percent / 1920;
             logo.x -= Percent * 0.6;
             logo.y -= Percent / 2;
-        }else{
+        }
+        else
+        {
             logo.scaleX = this._width / 1280;
             logo.scaleY = this._width / 1280;
             logo.x = ((this._width) / 2) - ((logo.width) / 2);
