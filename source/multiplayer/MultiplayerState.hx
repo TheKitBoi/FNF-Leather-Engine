@@ -160,6 +160,16 @@ class MultiplayerState extends MusicBeatState
                             coolChat.text += lines[line] + "\n";
                     }
                 }
+
+                @:privateAccess
+                var _session = Multiplayer.getInstance()._session;
+
+                if(_session.mode == SERVER)
+                {
+                    for(client in _session.clients) {
+                        client.send({verb: 'chatMessage', message: chatBox.text, messanger: nameBox.text});
+                    }
+                }
             case "startGame":
                 /*
                 var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
@@ -215,26 +225,6 @@ class MultiplayerState extends MusicBeatState
             var _session = Multiplayer.getInstance()._session;
             
             _session.send({verb: 'chatMessage', message: chatBox.text, messanger: nameBox.text});
-
-            @:privateAccess
-            if(MultiplayerState.instance != null)
-            {
-                MultiplayerState.instance.coolChat.text += nameBox.text + ": " + chatBox.text + "\n";
-
-                var text = MultiplayerState.instance.coolChat.text;
-
-                if(text.split("\n").length >= 25)
-                {
-                    var lines = text.split("\n");
-
-                    MultiplayerState.instance.coolChat.text = "";
-
-                    for(line in 0...lines.length) {
-                        if(line > 0 && lines[line] != "\n" && lines[line] != "")
-                            MultiplayerState.instance.coolChat.text += lines[line] + "\n";
-                    }
-                }
-            }
 
             chatBox.text = "";
         });
