@@ -250,7 +250,7 @@ class MultiplayerState extends MusicBeatState
 
                 chat.visible = true;
             }
-        });
+        }); 
 
         connectClient.cameras = [camHUD];
 
