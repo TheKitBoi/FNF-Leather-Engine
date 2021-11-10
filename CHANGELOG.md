@@ -2,8 +2,15 @@
 All notable changes will be documented in this file.
 
 ## [0.3.7] - ?/?/????
+### Added
+- Ability to change judgement timings.
+- Option to turn off / on the damage taken from hitting a *SHIT!* rating on a note. (Labeled as: "Anti Mash")
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
+- Fixed mania mode and death notes doing funny miss stuff?
+### Changed
+- Update Pico offsets
+- The School Background (Week 6) with the crying bg people (in Roses) is now a seperate stage, rather than being song specific.
 
 ## [0.3.6] - 11/6/2021
 ### Fixed
