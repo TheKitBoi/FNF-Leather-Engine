@@ -241,9 +241,10 @@ class MultiplayerState extends MusicBeatState
         {
             if(nameBox.text != "")
             {
+                /*
                 @:privateAccess
                 if(Multiplayer.getInstance()._session != null)
-                    Multiplayer.getInstance().finish();
+                    Multiplayer.getInstance().finish();*/
 
                 Multiplayer.getInstance().start(CLIENT, { ip: ipBox.text, port: Std.parseInt(portBox.text) });
 
