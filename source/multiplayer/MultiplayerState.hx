@@ -167,7 +167,7 @@ class MultiplayerState extends MusicBeatState
                 if(_session.mode == SERVER)
                 {
                     for(client in _session.clients) {
-                        client.send({verb: 'chatMessage', message: chatBox.text, messanger: nameBox.text});
+                        client.send({verb: 'chatMessage', message: e.data.message, messanger: e.data.messanger});
                     }
                 }
             case "startGame":
